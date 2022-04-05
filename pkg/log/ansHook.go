@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -47,6 +48,9 @@ func newANSHook(config ans.Configuration, correlationID string, client ans.Clien
 				Entry().WithField("stepName", "ANS").Warnf("provided SAP Alert Notification Service event template '%s' could not be unmarshalled: %v", eventTemplateString, err)
 			}
 		}
+	}
+	if len(config.EventTemplate) == 0 {
+		config.EventTemplate = os.Getenv("PIPER_ansEventTemplate")
 	}
 	if len(config.EventTemplate) > 0 {
 		err = event.MergeWithJSON([]byte(config.EventTemplate))
