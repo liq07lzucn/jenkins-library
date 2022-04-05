@@ -7,6 +7,7 @@ import (
 	"github.com/SAP/jenkins-library/pkg/xsuaa"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -40,6 +41,9 @@ func NewANSHook(config ans.Configuration, correlationID string) ANSHook {
 				Entry().WithField("stepName", "ANS").Warnf("provided ANS event template '%s' could not be unmarshalled: %v", eventTemplateString, err)
 			}
 		}
+	}
+	if len(config.EventTemplate) == 0 {
+		config.EventTemplate = os.Getenv("PIPER_ansEventTemplate")
 	}
 	if len(config.EventTemplate) > 0 {
 		err = event.MergeWithJSON([]byte(config.EventTemplate))
